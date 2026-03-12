@@ -1,4 +1,4 @@
-package p_henriqued.github.queue_manager_api;
+package phenriqued.github.queue_manager_api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
