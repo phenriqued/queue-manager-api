@@ -1,9 +1,9 @@
 package phenriqued.github.queue_manager_api.Models.Customer;
 
+import br.com.caelum.stella.validation.CPFValidator;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.CreateCustomerDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,17 +13,19 @@ import java.time.temporal.ChronoUnit;
 @Table(name = "tb_customer")
 
 @NoArgsConstructor
-@Getter
 @EqualsAndHashCode(of = "id")
+@Getter
 public class CustomerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Setter @NonNull
     @Column(nullable = false)
     private String name;
     @Column(length = 11, nullable = false, unique = true)
     private String cpf;
+    @Setter @NonNull
     @Column(length = 11, nullable = false, unique = true)
     private String phoneNumber;
     @Column(nullable = false)
@@ -34,11 +36,11 @@ public class CustomerEntity {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public CustomerEntity(String name, String cpf, String phoneNumber, LocalDate birthDate) {
-        this.name = name;
-        this.cpf = cpf;
-        this.phoneNumber = phoneNumber;
-        this.birthDate = birthDate;
+    public CustomerEntity(CreateCustomerDTO customerDTO) {
+        this.name = customerDTO.name();
+        this.cpf = customerDTO.cpf();
+        this.phoneNumber = customerDTO.phoneNumber();
+        this.birthDate = customerDTO.birthDate();
         this.isPriority = isElderly();
         this.createdAt = LocalDateTime.now();
     }
@@ -47,5 +49,15 @@ public class CustomerEntity {
         return ChronoUnit.YEARS.between(this.birthDate, LocalDate.now()) >= 60;
     }
 
+    public static Boolean isValidCPF(String cpf){
+        try{
+            CPFValidator validator = new CPFValidator();
+            validator.assertValid(cpf);
+            return true;
+        }catch (Exception exception){
+            System.out.println(exception.getCause() + " - " + exception.getMessage());
+            return false;
+        }
+    }
 
 }
