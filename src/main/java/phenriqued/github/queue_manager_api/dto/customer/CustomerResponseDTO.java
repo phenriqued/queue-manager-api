@@ -1,11 +1,11 @@
-package phenriqued.github.queue_manager_api.DTOs.CustomerDTO;
+package phenriqued.github.queue_manager_api.dto.customer;
 
-import phenriqued.github.queue_manager_api.Models.Customer.CustomerEntity;
+import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record CustomerCreatedResponseDTO(
+public record CustomerResponseDTO(
         Long id,
         String name,
         String cpf,
@@ -14,9 +14,8 @@ public record CustomerCreatedResponseDTO(
         Boolean isPriority,
         LocalDateTime createdAt) {
 
-    public CustomerCreatedResponseDTO(CustomerEntity customer){
+    public CustomerResponseDTO(CustomerEntity customer){
         this(customer.getId(), customer.getName(), customer.getCpf(), customer.getPhoneNumber(),
                 customer.getBirthDate(), customer.getIsPriority(), customer.getCreatedAt());
     }
-
 }

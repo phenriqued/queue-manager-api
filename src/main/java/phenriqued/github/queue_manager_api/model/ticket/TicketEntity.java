@@ -1,10 +1,10 @@
-package phenriqued.github.queue_manager_api.Models.Ticket;
+package phenriqued.github.queue_manager_api.model.ticket;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import phenriqued.github.queue_manager_api.Models.Customer.CustomerEntity;
+import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 
 import java.time.LocalDateTime;
 

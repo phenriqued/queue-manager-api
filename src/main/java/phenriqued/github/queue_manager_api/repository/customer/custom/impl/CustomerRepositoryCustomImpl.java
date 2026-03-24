@@ -1,4 +1,4 @@
-package phenriqued.github.queue_manager_api.Repositories.CustomerRepository.CustomerCustom.Impl;
+package phenriqued.github.queue_manager_api.repository.customer.custom.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -6,9 +6,9 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import phenriqued.github.queue_manager_api.Models.Customer.CustomerEntity;
-import phenriqued.github.queue_manager_api.Repositories.CustomerRepository.CustomerCustom.CustomerRepositoryCustom;
-import phenriqued.github.queue_manager_api.Repositories.CustomerRepository.CustomerCustom.Param.CustomerFilterParams;
+import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
+import phenriqued.github.queue_manager_api.repository.customer.custom.CustomerRepositoryCustom;
+import phenriqued.github.queue_manager_api.repository.customer.custom.param.CustomerFilterParams;
 
 import java.util.ArrayList;
 import java.util.List;

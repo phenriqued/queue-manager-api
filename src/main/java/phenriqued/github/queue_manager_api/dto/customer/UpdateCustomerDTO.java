@@ -1,4 +1,4 @@
-package phenriqued.github.queue_manager_api.DTOs.CustomerDTO;
+package phenriqued.github.queue_manager_api.dto.customer;
 
 import java.util.Objects;
 

@@ -1,17 +1,15 @@
-package phenriqued.github.queue_manager_api.Controllers.CustomerController;
+package phenriqued.github.queue_manager_api.controller.customer;
 
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.CreateCustomerDTO;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.CustomerCreatedResponseDTO;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.CustomerResponseDTO;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.UpdateCustomerDTO;
-import phenriqued.github.queue_manager_api.Repositories.CustomerRepository.CustomerCustom.Param.CustomerFilterParams;
-import phenriqued.github.queue_manager_api.Services.CustomerService.CustomerService;
+import phenriqued.github.queue_manager_api.dto.customer.CreateCustomerDTO;
+import phenriqued.github.queue_manager_api.dto.customer.CustomerCreatedResponseDTO;
+import phenriqued.github.queue_manager_api.dto.customer.CustomerResponseDTO;
+import phenriqued.github.queue_manager_api.dto.customer.UpdateCustomerDTO;
+import phenriqued.github.queue_manager_api.repository.customer.custom.param.CustomerFilterParams;
+import phenriqued.github.queue_manager_api.service.customer.CustomerService;
 
 import java.net.URI;
 import java.util.List;

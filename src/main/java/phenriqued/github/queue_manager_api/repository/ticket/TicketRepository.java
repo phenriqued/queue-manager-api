@@ -1,8 +1,8 @@
-package phenriqued.github.queue_manager_api.Repositories.TicketRepository;
+package phenriqued.github.queue_manager_api.repository.ticket;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import phenriqued.github.queue_manager_api.Models.Ticket.TicketEntity;
+import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 
 import java.util.Optional;
 

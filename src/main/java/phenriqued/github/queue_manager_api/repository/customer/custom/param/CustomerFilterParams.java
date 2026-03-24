@@ -1,4 +1,4 @@
-package phenriqued.github.queue_manager_api.Repositories.CustomerRepository.CustomerCustom.Param;
+package phenriqued.github.queue_manager_api.repository.customer.custom.param;
 
 import lombok.Data;
 

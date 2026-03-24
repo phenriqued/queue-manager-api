@@ -1,10 +1,10 @@
-package phenriqued.github.queue_manager_api.DTOs.CustomerDTO;
+package phenriqued.github.queue_manager_api.dto.customer;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import phenriqued.github.queue_manager_api.Models.Customer.CustomerEntity;
+import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 
 import java.time.LocalDate;
 

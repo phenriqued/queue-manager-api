@@ -1,16 +1,16 @@
-package phenriqued.github.queue_manager_api.Services.CustomerService;
+package phenriqued.github.queue_manager_api.service.customer;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.CreateCustomerDTO;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.CustomerCreatedResponseDTO;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.CustomerResponseDTO;
-import phenriqued.github.queue_manager_api.DTOs.CustomerDTO.UpdateCustomerDTO;
-import phenriqued.github.queue_manager_api.Models.Customer.CustomerEntity;
-import phenriqued.github.queue_manager_api.Repositories.CustomerRepository.CustomerCustom.Param.CustomerFilterParams;
-import phenriqued.github.queue_manager_api.Repositories.CustomerRepository.CustomerRepository;
+import phenriqued.github.queue_manager_api.dto.customer.CreateCustomerDTO;
+import phenriqued.github.queue_manager_api.dto.customer.CustomerCreatedResponseDTO;
+import phenriqued.github.queue_manager_api.dto.customer.CustomerResponseDTO;
+import phenriqued.github.queue_manager_api.dto.customer.UpdateCustomerDTO;
+import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
+import phenriqued.github.queue_manager_api.repository.customer.custom.param.CustomerFilterParams;
+import phenriqued.github.queue_manager_api.repository.customer.CustomerRepository;
 
 import java.util.List;
 
