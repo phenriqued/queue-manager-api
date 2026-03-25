@@ -1,5 +1,6 @@
 package phenriqued.github.queue_manager_api.dto.customer;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -17,6 +18,7 @@ public record CreateCustomerDTO(
         @Pattern(regexp = "^[1-9]{2}\\s?9[0-9]{8}$")
         @Size(min = 11, max = 11)
         String phoneNumber,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "[dd/MM/yyyy][yyyy-MM-dd]")
         @Past
         LocalDate birthDate) {
 
