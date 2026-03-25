@@ -22,6 +22,7 @@ public class TicketEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "customer_id", nullable = true)
     private CustomerEntity owner;
@@ -29,6 +30,7 @@ public class TicketEntity {
     @Column(nullable = false)
     private String code;
 
+    @Setter @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TypeTicket typeTicket;
