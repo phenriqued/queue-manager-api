@@ -49,15 +49,5 @@ public class CustomerEntity {
         return ChronoUnit.YEARS.between(this.birthDate, LocalDate.now()) >= 60;
     }
 
-    public static Boolean isValidCPF(String cpf){
-        try{
-            CPFValidator validator = new CPFValidator();
-            validator.assertValid(cpf);
-            return true;
-        }catch (Exception exception){
-            System.out.println(exception.getCause() + " - " + exception.getMessage());
-            return false;
-        }
-    }
 
 }

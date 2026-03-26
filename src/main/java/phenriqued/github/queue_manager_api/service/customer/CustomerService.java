@@ -24,7 +24,6 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-
     public CustomerCreatedResponseDTO createCustomer(CreateCustomerDTO data){
         var customer = new CustomerEntity(data);
         customerRepository.save(customer);
@@ -34,24 +33,25 @@ public class CustomerService {
     public CustomerResponseDTO getCustomerById(Long id) {
         return customerRepository.findById(id)
                 .map(CustomerResponseDTO::new)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
     }
     public List<CustomerResponseDTO> getAllCustomers(CustomerFilterParams params){
         return customerRepository.getWithFilter(params).stream().map(CustomerResponseDTO::new).toList();
     }
-    public Page<CustomerResponseDTO> getAllCustomers(Pageable pageable){
-        return customerRepository.findAll(pageable)
-                .map(CustomerResponseDTO::new);
-    }
 
     public void updateCustomer(Long id, UpdateCustomerDTO customerDTO){
-        CustomerEntity customer = customerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        CustomerEntity customer = customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
 
         customer.setPhoneNumber(customer.getPhoneNumber());
         customer.setName(customer.getName());
     }
 
     public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+        if(customerRepository.existsById(id)){
+            customerRepository.deleteById(id);
+            return;
+        }
+        throw new EntityNotFoundException("Customer was not found!");
     }
 }

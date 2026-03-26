@@ -1,16 +1,11 @@
 package phenriqued.github.queue_manager_api.dto.customer;
 
-import java.util.Objects;
+import jakarta.validation.constraints.Pattern;
 
 public record UpdateCustomerDTO(
         String name,
+        @Pattern(regexp = "^[1-9]{2}9[0-9]{8}$",
+                message = "The mobile phone number format is incorrect. Try this format: \"DD9XXXXXXXX\"")
         String phoneNumber) {
-
-    public UpdateCustomerDTO{
-        if(Objects.nonNull(phoneNumber)){
-            if(!phoneNumber.matches("^[1-9]{2}\\s?9[0-9]{8}$"))
-                throw new IllegalArgumentException("The mobile phone number format is incorrect. \nTry this format: \"DD 9XXXXXXXX\"");
-        }
-    }
 
 }

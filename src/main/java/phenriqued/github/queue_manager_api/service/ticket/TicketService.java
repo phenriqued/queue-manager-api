@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketRequestDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketResponseDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketUpdateRequestDTO;
+import phenriqued.github.queue_manager_api.infra.exception.IllegalDataException;
 import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
@@ -30,7 +31,7 @@ public class TicketService {
 
 
     public TicketResponseDTO issueTicket(TicketRequestDTO request) {
-        if(request.ownerCPF() == null && request.isManualPriority() == null) throw new NullPointerException();
+        if(request.ownerCPF() == null && request.isManualPriority() == null) throw new IllegalDataException("It is not possible to issue without information!");
 
         String code;
         TypeTicket typeTicket;
@@ -56,7 +57,7 @@ public class TicketService {
     public TicketResponseDTO findById(Long id) {
         return ticketRepository.findByIdWithCustomer(id)
                 .map(TicketResponseDTO::new)
-                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
+                .orElseThrow(() -> new EntityNotFoundException("Ticket was not found!"));
     }
 
     public Page<TicketResponseDTO> findAllTickets(Pageable pageable) {
@@ -74,8 +75,11 @@ public class TicketService {
         ticket.setTypeTicket(owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL);
     }
 
-
     public void deleteById(Long id) {
-        ticketRepository.deleteById(id);
+        if (ticketRepository.existsById(id)){
+            ticketRepository.deleteById(id);
+            return;
+        }
+        throw new EntityNotFoundException("Ticket was not found!");
     }
 }
