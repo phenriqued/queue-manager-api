@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
+import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode(of = "id")
-public class TicketEntity {
+public class TicketEntity implements Comparable<TicketEntity>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +44,11 @@ public class TicketEntity {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Setter @NotNull
+    @ManyToOne
+    @JoinColumn(name = "queue_id")
+    private QueueEntity queue;
+
     public TicketEntity(CustomerEntity owner, String code, TypeTicket typeTicket) {
         this.owner = owner;
         this.code = code;
@@ -58,5 +64,10 @@ public class TicketEntity {
         this.createdAt = LocalDateTime.now();
     }
 
+
+    @Override
+    public int compareTo(TicketEntity other) {
+        return this.createdAt.compareTo(other.createdAt);
+    }
 
 }

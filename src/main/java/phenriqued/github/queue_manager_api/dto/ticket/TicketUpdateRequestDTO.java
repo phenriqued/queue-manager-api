@@ -4,5 +4,6 @@ import phenriqued.github.queue_manager_api.infra.validation.cpf.ValidCPF;
 
 public record TicketUpdateRequestDTO(
         @ValidCPF
-        String ownerCPF) {
+        String ownerCPF,
+        Long queue) {
 }

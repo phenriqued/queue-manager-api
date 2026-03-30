@@ -1,6 +1,7 @@
 package phenriqued.github.queue_manager_api.service.customer;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,20 +32,17 @@ public class CustomerService {
     }
 
     public CustomerResponseDTO getCustomerById(Long id) {
-        return customerRepository.findById(id)
-                .map(CustomerResponseDTO::new)
-                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
+        return new CustomerResponseDTO(findCustomerById(id));
     }
     public List<CustomerResponseDTO> getAllCustomers(CustomerFilterParams params){
         return customerRepository.getWithFilter(params).stream().map(CustomerResponseDTO::new).toList();
     }
 
     public void updateCustomer(Long id, UpdateCustomerDTO customerDTO){
-        CustomerEntity customer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
+        CustomerEntity customer = findCustomerById(id);
 
-        customer.setPhoneNumber(customer.getPhoneNumber());
-        customer.setName(customer.getName());
+        customer.setPhoneNumber(customerDTO.phoneNumber());
+        customer.setName(customerDTO.name());
     }
 
     public void deleteCustomer(Long id) {
@@ -54,4 +52,14 @@ public class CustomerService {
         }
         throw new EntityNotFoundException("Customer was not found!");
     }
+
+    public CustomerEntity findCustomerById(@NotNull Long id){
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
+    }
+    public CustomerEntity findCustomerByCpf(@NotNull String cpf){
+        return customerRepository.findByCpf(cpf)
+                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
+    }
+
 }

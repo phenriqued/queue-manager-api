@@ -1,5 +1,6 @@
 package phenriqued.github.queue_manager_api.controller.ticket;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,7 +25,7 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<TicketResponseDTO> createTicket(@RequestBody TicketRequestDTO request){
+    public ResponseEntity<TicketResponseDTO> createTicket(@RequestBody @Valid TicketRequestDTO request){
         TicketResponseDTO ticket = service.issueTicket(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(ticket.createdAt()).toUri();
         return ResponseEntity.created(uri).body(ticket);
@@ -40,7 +41,7 @@ public class TicketController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateTicket(@PathVariable Long id, @RequestBody TicketUpdateRequestDTO updateRequestDTO){
+    public ResponseEntity<Void> updateTicket(@PathVariable Long id, @RequestBody @Valid TicketUpdateRequestDTO updateRequestDTO){
         service.updateTicket(id, updateRequestDTO);
         return ResponseEntity.noContent().build();
     }

@@ -12,34 +12,37 @@ import phenriqued.github.queue_manager_api.infra.exception.IllegalDataException;
 import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
-import phenriqued.github.queue_manager_api.repository.customer.CustomerRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
+import phenriqued.github.queue_manager_api.service.customer.CustomerService;
+import phenriqued.github.queue_manager_api.service.queue.QueueService;
 import phenriqued.github.queue_manager_api.service.ticket.utils.TicketCodeGenerator;
 
 @Service
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final CustomerRepository customerRepository;
+    private final QueueService queueService;
+    private final CustomerService customerService;
     private final TicketCodeGenerator codeGenerator;
 
-    public TicketService(TicketRepository ticketRepository, CustomerRepository customerRepository, TicketCodeGenerator codeGenerator) {
+    public TicketService(TicketRepository ticketRepository, QueueService queueService,
+                         CustomerService customerService, TicketCodeGenerator codeGenerator) {
         this.ticketRepository = ticketRepository;
-        this.customerRepository = customerRepository;
+        this.queueService = queueService;
+        this.customerService = customerService;
         this.codeGenerator = codeGenerator;
     }
 
 
     public TicketResponseDTO issueTicket(TicketRequestDTO request) {
         if(request.ownerCPF() == null && request.isManualPriority() == null) throw new IllegalDataException("It is not possible to issue without information!");
-
+        var queue = queueService.findQueueById(request.queue());
         String code;
         TypeTicket typeTicket;
         TicketEntity ticket;
 
         if (request.ownerCPF() != null && !request.ownerCPF().isBlank()){
-            CustomerEntity owner = customerRepository.findByCpf(request.ownerCPF())
-                    .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
+            CustomerEntity owner = customerService.findCustomerByCpf(request.ownerCPF());
 
             code = codeGenerator.generateNextCode(owner.getIsPriority());
             typeTicket = owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
@@ -50,7 +53,9 @@ public class TicketService {
             typeTicket = request.isManualPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
             ticket = new TicketEntity(code, typeTicket);
         }
+        ticket.setQueue(queue);
         ticketRepository.save(ticket);
+        queueService.addToQueue(ticket);
         return new TicketResponseDTO(ticket);
     }
 
@@ -66,13 +71,20 @@ public class TicketService {
 
     @Transactional
     public void updateTicket(Long id, TicketUpdateRequestDTO updateDTO){
-        if (updateDTO.ownerCPF() == null) return;
-        CustomerEntity owner = customerRepository.findByCpf(updateDTO.ownerCPF())
-                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
+        if (updateDTO.ownerCPF() == null && updateDTO.queue() == null) return;
+
         TicketEntity ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ticket was not found!"));
-        ticket.setOwner(owner);
-        ticket.setTypeTicket(owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL);
+
+        if (updateDTO.ownerCPF() != null){
+            CustomerEntity owner = customerService.findCustomerByCpf(updateDTO.ownerCPF());
+            ticket.setOwner(owner);
+            ticket.setTypeTicket(owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL);
+        }
+        if (updateDTO.queue() != null){
+            var newQueue = queueService.findQueueById(updateDTO.queue());
+            ticket.setQueue(newQueue);
+        }
     }
 
     public void deleteById(Long id) {

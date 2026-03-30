@@ -14,11 +14,12 @@ public record TicketResponseDTO(
         String code,
         TypeTicket typeTicket,
         TicketStatus status,
-        LocalDateTime createdAt) {
+        LocalDateTime createdAt,
+        String queueName) {
 
     public TicketResponseDTO(TicketEntity entity){
         this(entity.getId(), entity.getOwner(), entity.getCode(), entity.getTypeTicket(),
-                entity.getStatus(), entity.getCreatedAt());
+                entity.getStatus(), entity.getCreatedAt(), entity.getQueue().getNameQueue());
     }
 
 }
