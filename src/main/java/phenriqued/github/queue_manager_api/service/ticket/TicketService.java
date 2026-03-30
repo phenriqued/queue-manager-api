@@ -12,8 +12,8 @@ import phenriqued.github.queue_manager_api.infra.exception.IllegalDataException;
 import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
+import phenriqued.github.queue_manager_api.repository.customer.CustomerRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
-import phenriqued.github.queue_manager_api.service.customer.CustomerService;
 import phenriqued.github.queue_manager_api.service.queue.QueueService;
 import phenriqued.github.queue_manager_api.service.ticket.utils.TicketCodeGenerator;
 
@@ -21,15 +21,15 @@ import phenriqued.github.queue_manager_api.service.ticket.utils.TicketCodeGenera
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final CustomerRepository customerRepository;
     private final QueueService queueService;
-    private final CustomerService customerService;
     private final TicketCodeGenerator codeGenerator;
 
-    public TicketService(TicketRepository ticketRepository, QueueService queueService,
-                         CustomerService customerService, TicketCodeGenerator codeGenerator) {
+    public TicketService(TicketRepository ticketRepository, CustomerRepository customerRepository,
+                         QueueService queueService, TicketCodeGenerator codeGenerator) {
         this.ticketRepository = ticketRepository;
+        this.customerRepository = customerRepository;
         this.queueService = queueService;
-        this.customerService = customerService;
         this.codeGenerator = codeGenerator;
     }
 
@@ -42,18 +42,17 @@ public class TicketService {
         TicketEntity ticket;
 
         if (request.ownerCPF() != null && !request.ownerCPF().isBlank()){
-            CustomerEntity owner = customerService.findCustomerByCpf(request.ownerCPF());
-
+            CustomerEntity owner = customerRepository.findByCpf(request.ownerCPF())
+                    .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
             code = codeGenerator.generateNextCode(owner.getIsPriority());
             typeTicket = owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
-            ticket = new TicketEntity(owner, code, typeTicket);
+            ticket = new TicketEntity(owner, code, typeTicket, queue);
 
         }else {
             code = codeGenerator.generateNextCode(request.isManualPriority());
             typeTicket = request.isManualPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
-            ticket = new TicketEntity(code, typeTicket);
+            ticket = new TicketEntity(code, typeTicket, queue);
         }
-        ticket.setQueue(queue);
         ticketRepository.save(ticket);
         queueService.addToQueue(ticket);
         return new TicketResponseDTO(ticket);
@@ -77,13 +76,11 @@ public class TicketService {
                 .orElseThrow(() -> new EntityNotFoundException("Ticket was not found!"));
 
         if (updateDTO.ownerCPF() != null){
-            CustomerEntity owner = customerService.findCustomerByCpf(updateDTO.ownerCPF());
-            ticket.setOwner(owner);
-            ticket.setTypeTicket(owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL);
+            ticket.changeOwner(customerRepository.findByCpf(updateDTO.ownerCPF())
+                    .orElseThrow(() -> new EntityNotFoundException("Customer was not found!")));
         }
         if (updateDTO.queue() != null){
-            var newQueue = queueService.findQueueById(updateDTO.queue());
-            ticket.setQueue(newQueue);
+            ticket.setQueue(queueService.findQueueById(updateDTO.queue()));
         }
     }
 

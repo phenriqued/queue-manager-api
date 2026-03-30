@@ -31,12 +31,12 @@ public class TicketEntity implements Comparable<TicketEntity>{
     @Column(nullable = false)
     private String code;
 
-    @Setter @NotNull
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TypeTicket typeTicket;
 
-    @Setter @NotNull
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketStatus status;
@@ -49,25 +49,32 @@ public class TicketEntity implements Comparable<TicketEntity>{
     @JoinColumn(name = "queue_id")
     private QueueEntity queue;
 
-    public TicketEntity(CustomerEntity owner, String code, TypeTicket typeTicket) {
+    public TicketEntity(CustomerEntity owner, String code, TypeTicket typeTicket, QueueEntity queue) {
         this.owner = owner;
         this.code = code;
         this.typeTicket = typeTicket;
         this.status = TicketStatus.PENDING;
         this.createdAt = LocalDateTime.now();
+        this.queue = queue;
     }
 
-    public TicketEntity(String code, TypeTicket typeTicket) {
+    public TicketEntity(String code, TypeTicket typeTicket, QueueEntity queue) {
         this.code = code;
         this.typeTicket = typeTicket;
         this.status = TicketStatus.PENDING;
         this.createdAt = LocalDateTime.now();
+        this.queue = queue;
     }
 
 
     @Override
     public int compareTo(TicketEntity other) {
         return this.createdAt.compareTo(other.createdAt);
+    }
+
+    public void changeOwner(@NotNull CustomerEntity owner){
+        this.owner = owner;
+        this.typeTicket = owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
     }
 
 }

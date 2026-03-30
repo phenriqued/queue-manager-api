@@ -6,7 +6,5 @@ public enum TicketStatus {
     IN_PROGRESS,
     COMPLETED,
     CANCELLED,
-    MISSED,
-    NO_SHOW
-
+    MISSED
 }

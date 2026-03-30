@@ -2,16 +2,14 @@ package phenriqued.github.queue_manager_api.service.customer;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import phenriqued.github.queue_manager_api.dto.customer.CreateCustomerDTO;
 import phenriqued.github.queue_manager_api.dto.customer.CustomerCreatedResponseDTO;
 import phenriqued.github.queue_manager_api.dto.customer.CustomerResponseDTO;
 import phenriqued.github.queue_manager_api.dto.customer.UpdateCustomerDTO;
 import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
-import phenriqued.github.queue_manager_api.repository.customer.custom.param.CustomerFilterParams;
 import phenriqued.github.queue_manager_api.repository.customer.CustomerRepository;
+import phenriqued.github.queue_manager_api.repository.customer.custom.param.CustomerFilterParams;
 
 import java.util.List;
 
@@ -55,10 +53,6 @@ public class CustomerService {
 
     public CustomerEntity findCustomerById(@NotNull Long id){
         return customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
-    }
-    public CustomerEntity findCustomerByCpf(@NotNull String cpf){
-        return customerRepository.findByCpf(cpf)
                 .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
     }
 
