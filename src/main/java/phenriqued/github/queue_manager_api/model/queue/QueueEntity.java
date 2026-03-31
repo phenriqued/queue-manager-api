@@ -5,10 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "tb_queue")
@@ -24,9 +20,6 @@ public class QueueEntity {
 
     @Column(nullable = false, unique = true)
     private String nameQueue;
-
-    @OneToMany(mappedBy = "queue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TicketEntity> ticketQueue = new ArrayList<>();
 
     @Setter
     @Column(nullable = false)

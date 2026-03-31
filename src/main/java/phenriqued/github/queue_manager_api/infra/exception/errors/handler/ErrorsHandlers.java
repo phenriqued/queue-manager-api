@@ -43,6 +43,6 @@ public class ErrorsHandlers {
     public ResponseEntity<String> handlerDataIntegrityViolationException(DataIntegrityViolationException e){
         return ResponseEntity.status(HttpStatus.CONFLICT).body("[ERROR] "+e.getMessage());
     }
-
+//HttpMessageNotReadableException
 
 }

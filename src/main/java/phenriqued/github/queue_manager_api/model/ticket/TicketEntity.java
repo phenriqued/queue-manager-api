@@ -76,5 +76,8 @@ public class TicketEntity implements Comparable<TicketEntity>{
         this.owner = owner;
         this.typeTicket = owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
     }
+    public void startAttendance(){
+        this.status = TicketStatus.IN_PROGRESS;
+    }
 
 }

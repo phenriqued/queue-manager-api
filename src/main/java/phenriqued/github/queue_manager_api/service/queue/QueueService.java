@@ -11,18 +11,16 @@ import phenriqued.github.queue_manager_api.model.ticket.TicketStatus;
 import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
 import phenriqued.github.queue_manager_api.repository.queue.QueueRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
+import phenriqued.github.queue_manager_api.service.queue.utils.InMemoryQueueState;
 
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 @Service
 public class QueueService {
 
     private final QueueRepository repository;
     private final TicketRepository ticketRepository;
-
-    private PriorityQueue<TicketEntity> preferentialQueue = new PriorityQueue<>();
-    private PriorityQueue<TicketEntity> normalQueue = new PriorityQueue<>();
+    private Map<Long, InMemoryQueueState> queueState = new HashMap<>();
 
     public QueueService(QueueRepository repository, TicketRepository ticketRepository) {
         this.repository = repository;
@@ -32,29 +30,34 @@ public class QueueService {
     @Transactional
     public void addToQueue(TicketEntity ticket){
         QueueEntity queue = ticket.getQueue();
-        queue.getTicketQueue().add(ticket);
+        queueState.putIfAbsent(queue.getId(), new InMemoryQueueState(queue.getId()));
         if(ticket.getTypeTicket().equals(TypeTicket.PRIORITY)){
-            preferentialQueue.add(ticket);
+            queueState.get(queue.getId()).addPreferentialQueue(ticket);
         }else {
-            normalQueue.add(ticket);
+            queueState.get(queue.getId()).addNormalQueue(ticket);
         }
     }
 
+    @Transactional
     public TicketResponseDTO callNext(Long id){
         QueueEntity queue = findQueueById(id);
-        if (queue.getPreferentialCalledCount() >= 2 && !normalQueue.isEmpty()){
+        InMemoryQueueState memoryQueue = queueState.get(queue.getId());
+        TicketEntity ticket = new TicketEntity();
+        if (queue.getPreferentialCalledCount() >= 2 && !memoryQueue.getNormalQueue().isEmpty()){
             queue.setPreferentialCalledCount(0);
-            return new TicketResponseDTO(normalQueue.poll());
-        }
-        if(!preferentialQueue.isEmpty()){
+            memoryQueue.setPreferentialCalledCount(0);
+            ticket = memoryQueue.pollNormalQueue();
+        }else if(!memoryQueue.getPreferentialQueue().isEmpty()){
             queue.setPreferentialCalledCount(queue.getPreferentialCalledCount() + 1);
-            return new TicketResponseDTO(preferentialQueue.poll());
-        }
-        if (!normalQueue.isEmpty()){
+            memoryQueue.setPreferentialCalledCount(memoryQueue.getPreferentialCalledCount() + 1);
+            ticket = memoryQueue.pollPreferentialQueue();
+        }else if (!memoryQueue.getNormalQueue().isEmpty()){
             queue.setPreferentialCalledCount(0);
-            return new TicketResponseDTO(normalQueue.poll());
+            memoryQueue.setPreferentialCalledCount(0);
+            ticket = memoryQueue.pollNormalQueue();
         }
-        return null;
+        ticket.startAttendance();
+        return new TicketResponseDTO(ticket);
     }
 
     public QueueEntity findQueueById(Long id) {
@@ -62,8 +65,9 @@ public class QueueService {
                 .orElseThrow(() -> new EntityNotFoundException("Queue was not found!"));
     }
 
-    public long getSize(Long id) {
-        return ticketRepository.countByQueueIdAndStatus(id, TicketStatus.PENDING);
+    public int getSize(Long id) {
+        return Math.toIntExact(
+                ticketRepository.countByQueueIdAndStatus(id, TicketStatus.PENDING));
     }
 
     public List<QueueResponseDTO> getAllQueues() {
