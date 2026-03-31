@@ -17,26 +17,29 @@ import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
 import phenriqued.github.queue_manager_api.service.queue.QueueService;
 import phenriqued.github.queue_manager_api.service.ticket.utils.TicketCodeGenerator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final CustomerRepository customerRepository;
     private final QueueService queueService;
-    private final TicketCodeGenerator codeGenerator;
+    private final Map<Long, TicketCodeGenerator> codeGenerator = new HashMap<>();
 
     public TicketService(TicketRepository ticketRepository, CustomerRepository customerRepository,
-                         QueueService queueService, TicketCodeGenerator codeGenerator) {
+                         QueueService queueService) {
         this.ticketRepository = ticketRepository;
         this.customerRepository = customerRepository;
         this.queueService = queueService;
-        this.codeGenerator = codeGenerator;
     }
 
 
     public TicketResponseDTO issueTicket(TicketRequestDTO request) {
         if(request.ownerCPF() == null && request.isManualPriority() == null) throw new IllegalDataException("It is not possible to issue without information!");
         var queue = queueService.findQueueById(request.queue());
+        codeGenerator.putIfAbsent(queue.getId(), new TicketCodeGenerator(queue.getId()));
         String code;
         TypeTicket typeTicket;
         TicketEntity ticket;
@@ -44,12 +47,12 @@ public class TicketService {
         if (request.ownerCPF() != null && !request.ownerCPF().isBlank()){
             CustomerEntity owner = customerRepository.findByCpf(request.ownerCPF())
                     .orElseThrow(() -> new EntityNotFoundException("Customer was not found!"));
-            code = codeGenerator.generateNextCode(owner.getIsPriority());
+            code = codeGenerator.get(queue.getId()).generateNextCode(owner.getIsPriority());
             typeTicket = owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
             ticket = new TicketEntity(owner, code, typeTicket, queue);
 
         }else {
-            code = codeGenerator.generateNextCode(request.isManualPriority());
+            code = codeGenerator.get(queue.getId()).generateNextCode(request.isManualPriority());
             typeTicket = request.isManualPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
             ticket = new TicketEntity(code, typeTicket, queue);
         }
