@@ -3,6 +3,7 @@ package phenriqued.github.queue_manager_api.controller.queue;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import phenriqued.github.queue_manager_api.dto.queue.QueueResponseDTO;
+import phenriqued.github.queue_manager_api.dto.ticket.TicketResponseDTO;
 import phenriqued.github.queue_manager_api.service.queue.QueueService;
 
 import java.util.List;
@@ -18,17 +19,17 @@ public class QueueController {
     }
 
     @PostMapping("/{id}/next")
-    public ResponseEntity<?> callNext(@PathVariable(name = "id") Long id){
-        var ticket = queueService.callNext(id);
-        if (ticket != null){
-            return ResponseEntity.ok().body(ticket);
+    public ResponseEntity<TicketResponseDTO> callNext(@PathVariable(name = "id") Long id){
+        try{
+            return ResponseEntity.ok().body(queueService.callNext(id));
+        }catch (NullPointerException e){
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok().body("There are no tickets in the queue");
     }
 
     @GetMapping("/{id}/size")
-    public ResponseEntity<String> getSizeQueue(@PathVariable(name = "id") Long id){
-        return ResponseEntity.ok().body("The queue has a total of "+ queueService.getSize(id) + " pending tickets!");
+    public ResponseEntity<Integer> getSizeQueue(@PathVariable(name = "id") Long id){
+        return ResponseEntity.ok().body(queueService.getSize(id));
     }
 
     @GetMapping
