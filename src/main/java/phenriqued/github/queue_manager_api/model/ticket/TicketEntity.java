@@ -44,9 +44,9 @@ public class TicketEntity implements Comparable<TicketEntity>{
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Setter @NotNull
+    @Setter
     @ManyToOne
-    @JoinColumn(name = "queue_id")
+    @JoinColumn(name = "queue_id", nullable = true)
     private QueueEntity queue;
 
     public TicketEntity(CustomerEntity owner, String code, TypeTicket typeTicket, QueueEntity queue) {
@@ -79,5 +79,14 @@ public class TicketEntity implements Comparable<TicketEntity>{
     public void startAttendance(){
         this.status = TicketStatus.IN_PROGRESS;
     }
-
+    public void statusCompleted() {
+        this.status = TicketStatus.COMPLETED;
+    }
+    public void statusCancel(){
+        this.status = TicketStatus.CANCELLED;
+        this.queue = null;
+    }
+    public void statusMissed(){
+        this.status = TicketStatus.MISSED;
+    }
 }

@@ -11,6 +11,7 @@ import phenriqued.github.queue_manager_api.dto.ticket.TicketUpdateRequestDTO;
 import phenriqued.github.queue_manager_api.infra.exception.IllegalDataException;
 import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
+import phenriqued.github.queue_manager_api.model.ticket.TicketStatus;
 import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
 import phenriqued.github.queue_manager_api.repository.customer.CustomerRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
@@ -66,6 +67,10 @@ public class TicketService {
                 .map(TicketResponseDTO::new)
                 .orElseThrow(() -> new EntityNotFoundException("Ticket was not found!"));
     }
+    public TicketEntity findTicketEntityById(Long id) {
+        return ticketRepository.findByIdWithCustomer(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ticket was not found!"));
+    }
 
     public Page<TicketResponseDTO> findAllTickets(Pageable pageable) {
         return ticketRepository.findAll(pageable).map(TicketResponseDTO::new);
@@ -94,4 +99,35 @@ public class TicketService {
         }
         throw new EntityNotFoundException("Ticket was not found!");
     }
+
+    @Transactional
+    public void completeTicket(Long id) {
+        TicketEntity ticket = findTicketEntityById(id);
+        if(ticket.getStatus() == TicketStatus.IN_PROGRESS){
+            ticket.statusCompleted();
+            return;
+        }
+        throw new IllegalStateException("It is not possible to complete a ticket that is not in progress.");
+    }
+    @Transactional
+    public void missTicket(Long id) {
+        TicketEntity ticket = findTicketEntityById(id);
+        if(ticket.getStatus() == TicketStatus.IN_PROGRESS){
+            ticket.statusMissed();
+            return;
+        }
+        throw new IllegalStateException("It is not possible to mark a ticket as miss once it has been completed.");
+    }
+    @Transactional
+    public void cencelTicket(Long id) {
+        TicketEntity ticket = findTicketEntityById(id);
+        if(ticket.getStatus() == TicketStatus.IN_PROGRESS || ticket.getStatus() == TicketStatus.PENDING){
+            queueService.removeTicketFromQueue(ticket);
+            ticket.statusCancel();
+            return;
+        }
+        throw new IllegalStateException("It is not possible to cancel a ticket that is completed or miss.");
+    }
+
+
 }

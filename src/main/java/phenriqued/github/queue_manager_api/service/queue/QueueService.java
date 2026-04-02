@@ -8,7 +8,6 @@ import phenriqued.github.queue_manager_api.dto.ticket.TicketResponseDTO;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketStatus;
-import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
 import phenriqued.github.queue_manager_api.repository.queue.QueueRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
 import phenriqued.github.queue_manager_api.service.queue.utils.InMemoryQueueState;
@@ -31,11 +30,7 @@ public class QueueService {
     public void addToQueue(TicketEntity ticket){
         QueueEntity queue = ticket.getQueue();
         queueState.putIfAbsent(queue.getId(), new InMemoryQueueState(queue.getId()));
-        if(ticket.getTypeTicket().equals(TypeTicket.PRIORITY)){
-            queueState.get(queue.getId()).addPreferentialQueue(ticket);
-        }else {
-            queueState.get(queue.getId()).addNormalQueue(ticket);
-        }
+        queueState.get(queue.getId()).addTicketToQueue(ticket);
     }
 
     @Transactional
@@ -57,6 +52,7 @@ public class QueueService {
             ticket = memoryQueue.pollNormalQueue();
         }
         ticket.startAttendance();
+        ticketRepository.saveAndFlush(ticket);
         return new TicketResponseDTO(ticket);
     }
 
@@ -73,4 +69,11 @@ public class QueueService {
     public List<QueueResponseDTO> getAllQueues() {
         return repository.findAll().stream().map(QueueResponseDTO::new).toList();
     }
+
+    public boolean removeTicketFromQueue(TicketEntity ticket){
+        QueueEntity queue = ticket.getQueue();
+        InMemoryQueueState memoryQueue = queueState.get(queue.getId());
+        return memoryQueue.removeTicketQueue(ticket);
+    }
+
 }

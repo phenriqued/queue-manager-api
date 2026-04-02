@@ -7,6 +7,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import phenriqued.github.queue_manager_api.dto.exception.ErrorMessageDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketRequestDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketResponseDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketUpdateRequestDTO;
@@ -36,7 +37,7 @@ public class TicketController {
         return ResponseEntity.ok().body(service.findById(id));
     }
     @GetMapping
-    public ResponseEntity<Page<TicketResponseDTO>> getAllTickets(@PageableDefault(size = 15, sort = "code") Pageable pageable){
+    public ResponseEntity<Page<TicketResponseDTO>> getAllTickets(@PageableDefault(size = 15, sort = "createdAt") Pageable pageable){
         return ResponseEntity.ok().body(service.findAllTickets(pageable));
     }
 
@@ -52,6 +53,33 @@ public class TicketController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<?> updateTicketStatusToCompleted(@PathVariable Long id){
+        try {
+            service.completeTicket(id);
+            return ResponseEntity.noContent().build();
+        }catch (IllegalStateException exception){
+            return ResponseEntity.badRequest().body(new ErrorMessageDTO(exception.getMessage()));
+        }
+    }
+    @PatchMapping("/{id}/miss")
+    public ResponseEntity<?> updateTicketStatusToMissed(@PathVariable Long id){
+        try{
+            service.missTicket(id);
+            return ResponseEntity.noContent().build();
+        }catch (IllegalStateException exception){
+            return ResponseEntity.badRequest().body(new ErrorMessageDTO(exception.getMessage()));
+        }
+    }
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<?> updateTicketStatusToCancelled(@PathVariable Long id){
+        try{
+            service.cencelTicket(id);
+            return ResponseEntity.noContent().build();
+        }catch (IllegalStateException exception){
+            return ResponseEntity.badRequest().body(new ErrorMessageDTO(exception.getMessage()));
+        }
+    }
 
 
 }

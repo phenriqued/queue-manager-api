@@ -3,6 +3,7 @@ package phenriqued.github.queue_manager_api.service.queue.utils;
 import lombok.Getter;
 import lombok.Setter;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
+import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
 
 import java.util.PriorityQueue;
 
@@ -19,10 +20,10 @@ public class InMemoryQueueState {
         this.queueId = queueId;
     }
 
-    public void addPreferentialQueue(TicketEntity ticket){
-        this.preferentialQueue.add(ticket);
-    }
-    public void addNormalQueue(TicketEntity ticket){
+    public void addTicketToQueue(TicketEntity ticket){
+        if (ticket.getTypeTicket() == TypeTicket.PRIORITY){
+            this.preferentialQueue.add(ticket);
+        }
         this.normalQueue.add(ticket);
     }
     public TicketEntity pollPreferentialQueue(){
@@ -30,6 +31,12 @@ public class InMemoryQueueState {
     }
     public TicketEntity pollNormalQueue(){
         return this.normalQueue.poll();
+    }
+    public boolean removeTicketQueue(TicketEntity ticket){
+        if (ticket.getTypeTicket() == TypeTicket.PRIORITY){
+            return preferentialQueue.remove(ticket);
+        }
+        return normalQueue.remove(ticket);
     }
 
 }
