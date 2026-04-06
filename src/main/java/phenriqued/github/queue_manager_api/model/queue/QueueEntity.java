@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "tb_queue")
@@ -21,12 +20,7 @@ public class QueueEntity {
     @Column(nullable = false, unique = true)
     private String nameQueue;
 
-    @Setter
-    @Column(nullable = false)
-    private int preferentialCalledCount;
-
     public QueueEntity(String nameQueue) {
         this.nameQueue = nameQueue;
-        this.preferentialCalledCount = 0;
     }
 }

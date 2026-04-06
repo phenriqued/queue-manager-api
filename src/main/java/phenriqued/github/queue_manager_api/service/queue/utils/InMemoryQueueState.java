@@ -23,8 +23,9 @@ public class InMemoryQueueState {
     public void addTicketToQueue(TicketEntity ticket){
         if (ticket.getTypeTicket() == TypeTicket.PRIORITY){
             this.preferentialQueue.add(ticket);
+        }else {
+            this.normalQueue.add(ticket);
         }
-        this.normalQueue.add(ticket);
     }
     public TicketEntity pollPreferentialQueue(){
         return this.preferentialQueue.poll();

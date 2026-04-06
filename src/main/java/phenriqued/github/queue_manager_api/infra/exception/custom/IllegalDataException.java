@@ -1,4 +1,4 @@
-package phenriqued.github.queue_manager_api.infra.exception;
+package phenriqued.github.queue_manager_api.infra.exception.custom;
 
 public class IllegalDataException extends RuntimeException {
     public IllegalDataException(String message) {

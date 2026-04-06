@@ -20,11 +20,7 @@ public class QueueController {
 
     @PostMapping("/{id}/next")
     public ResponseEntity<TicketResponseDTO> callNext(@PathVariable(name = "id") Long id){
-        try{
-            return ResponseEntity.ok().body(queueService.callNext(id));
-        }catch (NullPointerException e){
-            return ResponseEntity.noContent().build();
-        }
+        return ResponseEntity.ok().body(queueService.callNext(id));
     }
 
     @GetMapping("/{id}/size")

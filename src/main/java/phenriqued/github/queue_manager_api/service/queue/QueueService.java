@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import phenriqued.github.queue_manager_api.dto.queue.QueueResponseDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketResponseDTO;
+import phenriqued.github.queue_manager_api.infra.exception.custom.QueueException;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketStatus;
@@ -37,22 +38,22 @@ public class QueueService {
     public TicketResponseDTO callNext(Long id){
         QueueEntity queue = findQueueById(id);
         InMemoryQueueState memoryQueue = queueState.get(queue.getId());
-        TicketEntity ticket = new TicketEntity();
-        if (queue.getPreferentialCalledCount() >= 2 && !memoryQueue.getNormalQueue().isEmpty()){
-            queue.setPreferentialCalledCount(0);
+        TicketEntity ticket = null;
+        if (memoryQueue.getPreferentialCalledCount() >= 2 && !memoryQueue.getNormalQueue().isEmpty()){
             memoryQueue.setPreferentialCalledCount(0);
             ticket = memoryQueue.pollNormalQueue();
         }else if(!memoryQueue.getPreferentialQueue().isEmpty()){
-            queue.setPreferentialCalledCount(queue.getPreferentialCalledCount() + 1);
             memoryQueue.setPreferentialCalledCount(memoryQueue.getPreferentialCalledCount() + 1);
             ticket = memoryQueue.pollPreferentialQueue();
         }else if (!memoryQueue.getNormalQueue().isEmpty()){
-            queue.setPreferentialCalledCount(0);
             memoryQueue.setPreferentialCalledCount(0);
             ticket = memoryQueue.pollNormalQueue();
         }
+        if(ticket == null){
+            throw new QueueException("There are no more tickets in the queue.");
+        }
         ticket.startAttendance();
-        ticketRepository.saveAndFlush(ticket);
+        ticketRepository.save(ticket);
         return new TicketResponseDTO(ticket);
     }
 

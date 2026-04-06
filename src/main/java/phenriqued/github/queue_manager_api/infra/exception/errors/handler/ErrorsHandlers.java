@@ -8,7 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import phenriqued.github.queue_manager_api.dto.exception.DataErrorValidationDTO;
-import phenriqued.github.queue_manager_api.infra.exception.IllegalDataException;
+import phenriqued.github.queue_manager_api.infra.exception.custom.IllegalDataException;
+import phenriqued.github.queue_manager_api.infra.exception.custom.QueueException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +33,14 @@ public class ErrorsHandlers {
     @ExceptionHandler(IllegalDataException.class)
     public ResponseEntity<String> handlerIllegalDataException(IllegalDataException e){
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handlerIllegalStateException(IllegalStateException e){
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+    @ExceptionHandler(QueueException.class)
+    public ResponseEntity<String> handlerQueueException(QueueException e){
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

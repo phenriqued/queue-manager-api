@@ -28,7 +28,7 @@ public class TicketController {
     @PostMapping
     public ResponseEntity<TicketResponseDTO> createTicket(@RequestBody @Valid TicketRequestDTO request){
         TicketResponseDTO ticket = service.issueTicket(request);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(ticket.createdAt()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(ticket.id()).toUri();
         return ResponseEntity.created(uri).body(ticket);
     }
 
