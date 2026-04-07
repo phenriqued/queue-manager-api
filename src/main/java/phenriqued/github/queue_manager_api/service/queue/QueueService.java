@@ -38,21 +38,29 @@ public class QueueService {
     public TicketResponseDTO callNext(Long id){
         QueueEntity queue = findQueueById(id);
         InMemoryQueueState memoryQueue = queueState.get(queue.getId());
+        if (memoryQueue == null) throw new QueueException("Queue not initialized");
+
         TicketEntity ticket = null;
-        if (memoryQueue.getPreferentialCalledCount() >= 2 && !memoryQueue.getNormalQueue().isEmpty()){
-            memoryQueue.setPreferentialCalledCount(0);
-            ticket = memoryQueue.pollNormalQueue();
-        }else if(!memoryQueue.getPreferentialQueue().isEmpty()){
-            memoryQueue.setPreferentialCalledCount(memoryQueue.getPreferentialCalledCount() + 1);
-            ticket = memoryQueue.pollPreferentialQueue();
-        }else if (!memoryQueue.getNormalQueue().isEmpty()){
-            memoryQueue.setPreferentialCalledCount(0);
-            ticket = memoryQueue.pollNormalQueue();
+
+        memoryQueue.getLock().lock();
+        try {
+            if (memoryQueue.getPreferentialCalledCount() >= 2 && !memoryQueue.getNormalQueue().isEmpty()) {
+                memoryQueue.resetPreferencialCalledCount();
+                ticket = memoryQueue.pollNormalQueue();
+            } else if (!memoryQueue.getPreferentialQueue().isEmpty()) {
+                memoryQueue.incrementPreferencialCalledCount();
+                ticket = memoryQueue.pollPreferentialQueue();
+            } else if (!memoryQueue.getNormalQueue().isEmpty()) {
+                memoryQueue.resetPreferencialCalledCount();
+                ticket = memoryQueue.pollNormalQueue();
+            }
+            if (ticket == null) {
+                throw new QueueException("There are no more tickets in the queue.");
+            }
+            ticket.startAttendance();
+        }finally {
+            memoryQueue.getLock().unlock();
         }
-        if(ticket == null){
-            throw new QueueException("There are no more tickets in the queue.");
-        }
-        ticket.startAttendance();
         ticketRepository.save(ticket);
         return new TicketResponseDTO(ticket);
     }

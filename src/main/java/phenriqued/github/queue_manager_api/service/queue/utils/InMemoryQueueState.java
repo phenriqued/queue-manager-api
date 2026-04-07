@@ -6,6 +6,7 @@ import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
 
 import java.util.PriorityQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 public class InMemoryQueueState {
@@ -13,8 +14,8 @@ public class InMemoryQueueState {
     private Long queueId;
     private PriorityQueue<TicketEntity> preferentialQueue = new PriorityQueue<>();
     private PriorityQueue<TicketEntity> normalQueue = new PriorityQueue<>();
-    @Setter
     private int preferentialCalledCount = 0;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public InMemoryQueueState(Long queueId) {
         this.queueId = queueId;
@@ -38,6 +39,12 @@ public class InMemoryQueueState {
             return preferentialQueue.remove(ticket);
         }
         return normalQueue.remove(ticket);
+    }
+    public void incrementPreferencialCalledCount(){
+        this.preferentialCalledCount++;
+    }
+    public void resetPreferencialCalledCount(){
+        this.preferentialCalledCount = 0;
     }
 
 }
