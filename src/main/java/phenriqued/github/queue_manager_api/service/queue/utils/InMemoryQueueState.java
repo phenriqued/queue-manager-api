@@ -15,7 +15,7 @@ public class InMemoryQueueState {
     private PriorityQueue<TicketEntity> preferentialQueue = new PriorityQueue<>();
     private PriorityQueue<TicketEntity> normalQueue = new PriorityQueue<>();
     private int preferentialCalledCount = 0;
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock(true);
 
     public InMemoryQueueState(Long queueId) {
         this.queueId = queueId;

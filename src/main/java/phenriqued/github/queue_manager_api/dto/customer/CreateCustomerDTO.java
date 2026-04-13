@@ -15,7 +15,7 @@ public record CreateCustomerDTO(
         @NotBlank @NotNull
         @Pattern(regexp = "^[1-9]{2}9[0-9]{8}$", message = "The mobile phone number format is incorrect. Try this format: \"DD9XXXXXXXX\"")
         String phoneNumber,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "[dd/MM/yyyy][yyyy-MM-dd]")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         @Past
         LocalDate birthDate) {
 
