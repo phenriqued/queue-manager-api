@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import phenriqued.github.queue_manager_api.dto.exception.DataErrorValidationDTO;
 import phenriqued.github.queue_manager_api.infra.exception.custom.IllegalDataException;
+import phenriqued.github.queue_manager_api.infra.exception.custom.InvalidTicketOperationException;
 import phenriqued.github.queue_manager_api.infra.exception.custom.NoTicketInQueueException;
 
 import java.util.Arrays;
@@ -34,9 +35,9 @@ public class ErrorsHandlers {
     public ResponseEntity<String> handlerIllegalDataException(IllegalDataException e){
         return ResponseEntity.badRequest().body(e.getMessage());
     }
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handlerIllegalStateException(IllegalStateException e){
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(InvalidTicketOperationException.class)
+    public ResponseEntity<String> handlerInvalidTicketOperationException(InvalidTicketOperationException e){
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(e.getMessage());
     }
     @ExceptionHandler(NoTicketInQueueException.class)
     public ResponseEntity<String> handlerNoTicketInQueueException(NoTicketInQueueException e){

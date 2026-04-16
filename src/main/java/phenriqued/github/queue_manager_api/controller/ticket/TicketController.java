@@ -55,30 +55,18 @@ public class TicketController {
 
     @PatchMapping("/{id}/complete")
     public ResponseEntity<?> updateTicketStatusToCompleted(@PathVariable Long id){
-        try {
-            service.completeTicket(id);
-            return ResponseEntity.noContent().build();
-        }catch (IllegalStateException exception){
-            return ResponseEntity.badRequest().body(new ErrorMessageDTO(exception.getMessage()));
-        }
+        service.completeTicket(id);
+        return ResponseEntity.noContent().build();
     }
     @PatchMapping("/{id}/miss")
     public ResponseEntity<?> updateTicketStatusToMissed(@PathVariable Long id){
-        try{
-            service.missTicket(id);
-            return ResponseEntity.noContent().build();
-        }catch (IllegalStateException exception){
-            return ResponseEntity.badRequest().body(new ErrorMessageDTO(exception.getMessage()));
-        }
+        service.missTicket(id);
+        return ResponseEntity.noContent().build();
     }
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<?> updateTicketStatusToCancelled(@PathVariable Long id){
-        try{
-            service.cencelTicket(id);
-            return ResponseEntity.noContent().build();
-        }catch (IllegalStateException exception){
-            return ResponseEntity.badRequest().body(new ErrorMessageDTO(exception.getMessage()));
-        }
+        service.cencelTicket(id);
+        return ResponseEntity.noContent().build();
     }
 
 

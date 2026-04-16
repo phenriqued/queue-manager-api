@@ -78,7 +78,7 @@ public class TicketService {
 
     @Transactional
     public void updateTicket(Long id, TicketUpdateRequestDTO updateDTO){
-        if (updateDTO.ownerCPF() == null && updateDTO.queue() == null) return;
+        if (updateDTO.ownerCPF() == null && updateDTO.queue() == null) throw new IllegalDataException("Owner's CPF and queue cannot be null.");
 
         TicketEntity ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ticket was not found!"));

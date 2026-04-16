@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import phenriqued.github.queue_manager_api.infra.exception.custom.IllegalDataException;
+import phenriqued.github.queue_manager_api.infra.exception.custom.InvalidTicketOperationException;
 import phenriqued.github.queue_manager_api.model.customer.CustomerEntity;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 
@@ -73,37 +74,41 @@ public class TicketEntity implements Comparable<TicketEntity>{
     }
 
     public void changeOwner(@NotNull CustomerEntity owner){
-        this.owner = owner;
-        this.typeTicket = owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
+        if(this.status == TicketStatus.PENDING || this.status == TicketStatus.IN_PROGRESS){
+            this.owner = owner;
+            this.typeTicket = owner.getIsPriority() ? TypeTicket.PRIORITY : TypeTicket.NORMAL;
+            return;
+        }
+        throw new InvalidTicketOperationException("It is not possible to change the owner when the ticket's status is anything other than 'IN_PROGRESS' or 'PENDING'.");
     }
     public void startAttendance(){
         if(this.status != TicketStatus.PENDING) {
-            throw new IllegalStateException("It is not possible to start a service request for a ticket that is not pending.");
+            throw new InvalidTicketOperationException("It is not possible to start a service request for a ticket that is not pending.");
         }
         this.status = TicketStatus.IN_PROGRESS;
     }
     public void statusCompleted() {
         if(this.status != TicketStatus.IN_PROGRESS){
-            throw new IllegalStateException("It is not possible to complete a ticket that is not in progress.");
+            throw new InvalidTicketOperationException("It is not possible to complete a ticket that is not in progress.");
         }
         this.status = TicketStatus.COMPLETED;
     }
     public void statusCancel(){
         if(this.status != TicketStatus.PENDING) {
-            throw new IllegalStateException("It is not possible to cancel a ticket that is completed or miss.");
+            throw new InvalidTicketOperationException("It is not possible to cancel a ticket that is completed or miss.");
         }
         this.status = TicketStatus.CANCELLED;
         this.queue = null;
     }
     public void statusMissed(){
         if(this.status != TicketStatus.IN_PROGRESS){
-            throw new IllegalStateException("It is not possible to mark a ticket as miss once it has been completed.");
+            throw new InvalidTicketOperationException("It is not possible to mark a ticket as miss once it has been completed.");
         }
         this.status = TicketStatus.MISSED;
     }
     public void statusPending(){
         if (this.status != TicketStatus.IN_PROGRESS){
-            throw new IllegalStateException("It is not possible to mark a ticket as pending when it is not in progress.");
+            throw new InvalidTicketOperationException("It is not possible to mark a ticket as pending when it is not in progress.");
         }
         this.status = TicketStatus.PENDING;
     }
