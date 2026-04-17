@@ -112,7 +112,7 @@ public class TicketService {
         ticket.statusMissed();
     }
     @Transactional
-    public void cencelTicket(Long id) {
+    public void cancelTicket(Long id) {
         TicketEntity ticket = findTicketEntityById(id);
         queueService.removeTicketFromQueue(ticket);
         ticket.statusCancel();

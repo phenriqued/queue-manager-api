@@ -1,10 +1,12 @@
 package phenriqued.github.queue_manager_api.service.queue;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import phenriqued.github.queue_manager_api.dto.queue.QueueResponseDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketResponseDTO;
+import phenriqued.github.queue_manager_api.infra.exception.custom.InvalidQueueTransitionException;
 import phenriqued.github.queue_manager_api.infra.exception.custom.NoTicketInQueueException;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
@@ -27,8 +29,8 @@ public class QueueService {
         this.ticketRepository = ticketRepository;
     }
 
-    @Transactional
-    public void addToQueue(TicketEntity ticket){
+    public void addToQueue(@NotNull TicketEntity ticket){
+        if (Objects.isNull(ticket.getQueue())) throw new InvalidQueueTransitionException("It's not possible to add the ticket to the queue when the queue is null. Check the ticket's dependency.");
         QueueEntity queue = ticket.getQueue();
         queueState.putIfAbsent(queue.getId(), new InMemoryQueueState(queue.getId()));
         queueState.get(queue.getId()).addTicketToQueue(ticket);
@@ -79,7 +81,8 @@ public class QueueService {
         return repository.findAll().stream().map(QueueResponseDTO::new).toList();
     }
 
-    public boolean removeTicketFromQueue(TicketEntity ticket){
+    public boolean removeTicketFromQueue(@NotNull TicketEntity ticket){
+        if (Objects.isNull(ticket.getQueue())) throw new InvalidQueueTransitionException("It's not possible to remove the ticket to the queue when the queue is null. Check the ticket's dependency.");
         QueueEntity queue = ticket.getQueue();
         InMemoryQueueState memoryQueue = queueState.get(queue.getId());
         return memoryQueue.removeTicketQueue(ticket);

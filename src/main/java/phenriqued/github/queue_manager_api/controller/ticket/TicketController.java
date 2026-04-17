@@ -65,7 +65,7 @@ public class TicketController {
     }
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<?> updateTicketStatusToCancelled(@PathVariable Long id){
-        service.cencelTicket(id);
+        service.cancelTicket(id);
         return ResponseEntity.noContent().build();
     }
 

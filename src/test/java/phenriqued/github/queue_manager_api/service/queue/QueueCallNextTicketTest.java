@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import phenriqued.github.queue_manager_api.infra.exception.custom.NoTicketInQueueException;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
