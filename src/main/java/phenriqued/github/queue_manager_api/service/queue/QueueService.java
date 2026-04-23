@@ -68,6 +68,7 @@ public class QueueService {
     }
 
     public QueueEntity findQueueById(Long id) {
+        if(Objects.isNull(id)) throw new InvalidQueueTransitionException("It is not possible to search for a queue whose ID is equal to null.");
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Queue was not found!"));
     }

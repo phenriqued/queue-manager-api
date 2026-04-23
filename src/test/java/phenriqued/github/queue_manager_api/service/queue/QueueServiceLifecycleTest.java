@@ -1,18 +1,14 @@
 package phenriqued.github.queue_manager_api.service.queue;
 
-import org.assertj.core.internal.Arrays;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import phenriqued.github.queue_manager_api.infra.exception.custom.InvalidQueueTransitionException;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
-import phenriqued.github.queue_manager_api.model.ticket.TicketStatus;
 import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
 import phenriqued.github.queue_manager_api.repository.queue.QueueRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
