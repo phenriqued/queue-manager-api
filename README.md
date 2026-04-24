@@ -64,10 +64,11 @@ O projeto segue uma arquitetura em camadas, separando responsabilidades entre:
 
 ## 🚀 Próximos Passos
 
-- Implementar autenticação e autorização
-- Adicionar histórico de atendimentos
 - Implementar testes unitários
+- Adicionar histórico de atendimentos
 - Criar relatórios básicos
+- Implementar autenticação e autorização
+
 
 ---
 
