@@ -1,0 +1,4 @@
+CREATE TABLE tb_queue(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name_queue VARCHAR(100) NOT NULL
+);

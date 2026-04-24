@@ -48,7 +48,7 @@ public class TicketEntity implements Comparable<TicketEntity>{
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "queue_id", nullable = true)
+    @JoinColumn(name = "queue_id", nullable = false)
     private QueueEntity queue;
 
     public TicketEntity(CustomerEntity owner, String code, TypeTicket typeTicket, QueueEntity queue) {

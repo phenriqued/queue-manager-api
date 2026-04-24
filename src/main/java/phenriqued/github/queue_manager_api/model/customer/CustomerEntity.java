@@ -1,6 +1,5 @@
 package phenriqued.github.queue_manager_api.model.customer;
 
-import br.com.caelum.stella.validation.CPFValidator;
 import jakarta.persistence.*;
 import lombok.*;
 import phenriqued.github.queue_manager_api.dto.customer.CreateCustomerDTO;

@@ -1,0 +1,9 @@
+CREATE TABLE tb_customer(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    phone_number VARCHAR(11) NOT NULL UNIQUE,
+    birth_date DATE NOT NULL,
+    is_priority BOOLEAN NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
