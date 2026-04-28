@@ -2,6 +2,7 @@ package phenriqued.github.queue_manager_api.controller.queue;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import phenriqued.github.queue_manager_api.dto.queue.QueueMetricsDTO;
 import phenriqued.github.queue_manager_api.dto.queue.QueueResponseDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketResponseDTO;
 import phenriqued.github.queue_manager_api.service.queue.QueueService;
@@ -33,6 +34,10 @@ public class QueueController {
         return ResponseEntity.ok(queueService.getAllQueues());
     }
 
+    @GetMapping("/{id}/metrics")
+    public ResponseEntity<QueueMetricsDTO> getQueueMetrics(@PathVariable(name = "id")Long id){
+        return ResponseEntity.ok().body(queueService.queueMetricsByID(id));
+    }
 
 
 }

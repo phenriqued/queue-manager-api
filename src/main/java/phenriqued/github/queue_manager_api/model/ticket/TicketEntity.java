@@ -44,12 +44,15 @@ public class TicketEntity implements Comparable<TicketEntity>{
     @Column(nullable = false)
     private TicketStatus status;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @ManyToOne
     @JoinColumn(name = "queue_id", nullable = false)
     private QueueEntity queue;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime startAt;
+    private LocalDateTime finishedAt;
 
     public TicketEntity(CustomerEntity owner, String code, TypeTicket typeTicket, QueueEntity queue) {
         this.owner = owner;
@@ -85,12 +88,14 @@ public class TicketEntity implements Comparable<TicketEntity>{
         if(this.status != TicketStatus.PENDING) {
             throw new InvalidTicketOperationException("It is not possible to start a service request for a ticket that is not pending.");
         }
+        this.startAt = LocalDateTime.now();
         this.status = TicketStatus.IN_PROGRESS;
     }
     public void statusCompleted() {
         if(this.status != TicketStatus.IN_PROGRESS){
             throw new InvalidTicketOperationException("It is not possible to complete a ticket that is not in progress.");
         }
+        this.finishedAt = LocalDateTime.now();
         this.status = TicketStatus.COMPLETED;
     }
     public void statusCancel(){
@@ -98,12 +103,13 @@ public class TicketEntity implements Comparable<TicketEntity>{
             throw new InvalidTicketOperationException("It is not possible to cancel a ticket that is completed or miss.");
         }
         this.status = TicketStatus.CANCELLED;
-        this.queue = null;
+        this.finishedAt = LocalDateTime.now();
     }
     public void statusMissed(){
         if(this.status != TicketStatus.IN_PROGRESS){
             throw new InvalidTicketOperationException("It is not possible to mark a ticket as miss once it has been completed.");
         }
+        this.finishedAt = LocalDateTime.now();
         this.status = TicketStatus.MISSED;
     }
     public void statusPending(){

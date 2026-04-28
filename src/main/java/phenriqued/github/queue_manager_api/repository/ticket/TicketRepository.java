@@ -19,11 +19,17 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     @Query("SELECT t FROM TicketEntity t " +
             "WHERE t.queue.id = :queueId AND " +
             "t.status = :status")
-    List<TicketEntity> findAllByIdAndStatus(@Param("queueId") Long queueId, @Param("status") TicketStatus status);
+    List<TicketEntity> findAllByQueueIdAndStatus(@Param("queueId") Long queueId, @Param("status") TicketStatus status);
+
+    @Query("SELECT t FROM TicketEntity t " +
+            "WHERE t.queue.id = :queueId")
+    List<TicketEntity> findAllByQueueId(@Param("queueId") Long queueId);
 
     @Query("SELECT COUNT(t) FROM TicketEntity t " +
             "WHERE t.queue.id = :queueId AND " +
             "t.status = :status")
     long countByQueueIdAndStatus(@Param("queueId") Long queueId, @Param("status") TicketStatus status);
+
+
 
 }

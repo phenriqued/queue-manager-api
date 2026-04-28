@@ -50,7 +50,7 @@ public class QueueDataLoader implements CommandLineRunner {
 
 
     private void addAllTicketsInPendingByQueue(Long id){
-        List<TicketEntity> ticketsInProgress = ticketRepository.findAllByIdAndStatus(id, TicketStatus.PENDING);
+        List<TicketEntity> ticketsInProgress = ticketRepository.findAllByQueueIdAndStatus(id, TicketStatus.PENDING);
 
         if(!ticketsInProgress.isEmpty()){
             ticketsInProgress.forEach(queueService::addToQueue);
