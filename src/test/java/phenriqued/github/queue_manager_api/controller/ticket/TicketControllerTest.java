@@ -50,7 +50,7 @@ class TicketControllerTest {
         var requestJson = requestTicketDTO.write(new TicketRequestDTO(null, true, 1L)).getJson();
 
         var responsaMockada = new TicketResponseDTO(1L, null, "P-10001",
-                TypeTicket.PRIORITY, TicketStatus.PENDING, LocalDateTime.now(), "Atendimento Geral");
+                TypeTicket.PRIORITY, TicketStatus.PENDING, LocalDateTime.now(), "Atendimento Geral", null, null);
         when(ticketService.issueTicket(any(TicketRequestDTO.class))).thenReturn(responsaMockada);
 
         mockMvc.perform(post("/tickets")
@@ -81,7 +81,7 @@ class TicketControllerTest {
     void shouldReturnJsonContainingTicketDataById() throws Exception {
         Long ticketId = 1L;
         var responsaMockada = new TicketResponseDTO(1L, null, "P-10001",
-                TypeTicket.PRIORITY, TicketStatus.PENDING, LocalDateTime.now(), "Atendimento Geral");
+                TypeTicket.PRIORITY, TicketStatus.PENDING, LocalDateTime.now(), "Atendimento Geral", null, null);
         when(ticketService.findById(any(Long.class))).thenReturn(responsaMockada);
 
         mockMvc.perform(get("/tickets/" + ticketId))

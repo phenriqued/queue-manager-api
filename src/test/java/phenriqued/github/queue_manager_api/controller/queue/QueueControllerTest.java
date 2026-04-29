@@ -37,7 +37,7 @@ class QueueControllerTest {
     void callNextTeste() throws Exception{
         Long idQueue = 1L;
         var responseMock = new TicketResponseDTO(1L, null, "P-10001",
-                TypeTicket.PRIORITY, TicketStatus.PENDING, LocalDateTime.now(), "Atendimento Geral");
+                TypeTicket.PRIORITY, TicketStatus.PENDING, LocalDateTime.now(), "Atendimento Geral", null, null);
         when(queueService.callNext(idQueue)).thenReturn(responseMock);
 
         mockMvc.perform(post("/queue/"+idQueue+"/next"))

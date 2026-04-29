@@ -95,6 +95,7 @@ public class QueueService {
     public QueueMetricsDTO queueMetricsByID(Long id) {
         QueueEntity queue = findQueueById(id);
         List<TicketEntity> ticketList = ticketRepository.findAllByQueueId(queue.getId());
+        int totalTicketsPending= Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.PENDING));
         int totalTicketsCompleted = Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.COMPLETED));
         int totalTicketsCancel = Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.CANCELLED));
         int totalTicketsMissed = Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.MISSED));
@@ -110,7 +111,8 @@ public class QueueService {
                 .average()
                 .orElse(0.0);
 
-        return new QueueMetricsDTO(ticketList.size(),totalTicketsCompleted, totalTicketsCancel, totalTicketsMissed, averageWaitingTime, averageServiceTime);
+        return new QueueMetricsDTO(ticketList.size(), totalTicketsPending, totalTicketsCompleted, totalTicketsCancel,
+                totalTicketsMissed, averageWaitingTime, averageServiceTime);
     }
 
 
