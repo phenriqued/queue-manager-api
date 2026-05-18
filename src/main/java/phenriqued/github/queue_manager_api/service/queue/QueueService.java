@@ -92,27 +92,9 @@ public class QueueService {
     }
 
     @Transactional(readOnly = true)
-    public QueueMetricsDTO queueMetricsByID(Long id) {
-        QueueEntity queue = findQueueById(id);
-        List<TicketEntity> ticketList = ticketRepository.findAllByQueueId(queue.getId());
-        int totalTicketsPending= Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.PENDING));
-        int totalTicketsCompleted = Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.COMPLETED));
-        int totalTicketsCancel = Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.CANCELLED));
-        int totalTicketsMissed = Math.toIntExact(ticketRepository.countByQueueIdAndStatus(queue.getId(), TicketStatus.MISSED));
-
-        List<TicketEntity> listTicketsMarkedCompletedOrMissed = ticketList.stream()
-                .filter(ticket -> ticket.getStatus().equals(TicketStatus.COMPLETED) || ticket.getStatus().equals(TicketStatus.MISSED)).toList();
-        double averageWaitingTime = listTicketsMarkedCompletedOrMissed.stream()
-                .mapToLong(t -> Duration.between(t.getCreatedAt(), t.getStartAt()).getSeconds())
-                .average()
-                .orElse(0.0);
-        double averageServiceTime = listTicketsMarkedCompletedOrMissed.stream()
-                .mapToLong(t -> Duration.between(t.getStartAt(), t.getFinishedAt()).getSeconds())
-                .average()
-                .orElse(0.0);
-
-        return new QueueMetricsDTO(ticketList.size(), totalTicketsPending, totalTicketsCompleted, totalTicketsCancel,
-                totalTicketsMissed, averageWaitingTime, averageServiceTime);
+    public QueueMetricsDTO queueMetricsByID(Long id){
+        return ticketRepository.getAllQueueMetrics(id)
+                .orElseThrow(() -> new EntityNotFoundException("Queue was not found!"));
     }
 
 
