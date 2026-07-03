@@ -3,11 +3,14 @@ package phenriqued.github.queue_manager_api.service.ticket;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.mysql.MySQLContainer;
 import phenriqued.github.queue_manager_api.dto.customer.CreateCustomerDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketRequestDTO;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketUpdateRequestDTO;
@@ -25,9 +28,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TicketServiceUpdatesAndDeleteTest {
+
+    @Container
+    @ServiceConnection
+    static MySQLContainer mySQL = new MySQLContainer("mysql:latest");
 
     @Autowired
     private TicketService ticketService;
@@ -48,7 +56,6 @@ class TicketServiceUpdatesAndDeleteTest {
         this.sharedCustomer = customerRepository.save(customer);
     }
 
-    @Rollback
     @Transactional
     @BeforeEach
     void setup(){

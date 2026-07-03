@@ -4,10 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.mysql.MySQLContainer;
 import phenriqued.github.queue_manager_api.infra.exception.custom.NoTicketInQueueException;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
@@ -25,12 +29,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class QueueCallNextTicketTest {
+
+    @Container
+    @ServiceConnection
+    static MySQLContainer mySQL = new MySQLContainer("mysql:latest");
 
     @Autowired
     private QueueService queueService;
@@ -45,7 +55,6 @@ class QueueCallNextTicketTest {
         TicketEntity ticket2 = new TicketEntity("N-10001", TypeTicket.NORMAL, queue);
         TicketEntity ticket3 = new TicketEntity("P-10002", TypeTicket.PRIORITY, queue);
         TicketEntity ticket4 = new TicketEntity("N-10002", TypeTicket.NORMAL, queue);
-
         queueService.addToQueue(ticket1);
         queueService.addToQueue(ticket2);
         queueService.addToQueue(ticket3);

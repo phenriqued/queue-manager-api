@@ -1,12 +1,18 @@
 package phenriqued.github.queue_manager_api.service.ticket;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.mysql.MySQLContainer;
 import phenriqued.github.queue_manager_api.dto.ticket.TicketRequestDTO;
 import phenriqued.github.queue_manager_api.infra.exception.custom.InvalidTicketOperationException;
 import phenriqued.github.queue_manager_api.model.queue.QueueEntity;
@@ -15,13 +21,19 @@ import phenriqued.github.queue_manager_api.model.ticket.TicketStatus;
 import phenriqued.github.queue_manager_api.repository.queue.QueueRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TicketServiceStatusTest {
+
+    @Container
+    @ServiceConnection
+    static MySQLContainer mySQL = new MySQLContainer("mysql:latest");
 
     @Autowired
     private TicketService ticketService;
@@ -30,7 +42,7 @@ class TicketServiceStatusTest {
     @Autowired
     private QueueRepository queueRepository;
 
-    @Rollback
+
     @Transactional
     @BeforeAll
     void setup(){
