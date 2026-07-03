@@ -93,6 +93,8 @@ public class QueueService {
 
     @Transactional(readOnly = true)
     public QueueMetricsDTO queueMetricsByID(Long id){
+        if (!repository.existsById(id)) throw new EntityNotFoundException("Queue was not found!");
+
         return ticketRepository.getAllQueueMetrics(id)
                 .orElseThrow(() -> new EntityNotFoundException("Queue was not found!"));
     }
