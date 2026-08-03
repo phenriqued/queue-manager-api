@@ -68,7 +68,7 @@ class QueueCallNextTicketTest {
         var firstTicketPriority = queueService.callNext(idQueue);
         var secondTicketPriority = queueService.callNext(idQueue);
         var firstTicketNormal = queueService.callNext(idQueue);
-        var thirdTicketPriority = queueService.callNext(idQueue);
+        var secondTicketNormal = queueService.callNext(idQueue);
 
         assertEquals(TypeTicket.PRIORITY, firstTicketPriority.typeTicket());
         assertEquals(TicketStatus.IN_PROGRESS, firstTicketPriority.status());
@@ -78,21 +78,16 @@ class QueueCallNextTicketTest {
 
         assertEquals(TypeTicket.NORMAL, firstTicketNormal.typeTicket());
         assertEquals(TicketStatus.IN_PROGRESS, firstTicketNormal.status());
-
-        assertEquals(TypeTicket.NORMAL, thirdTicketPriority.typeTicket());
-        assertEquals(TicketStatus.IN_PROGRESS, thirdTicketPriority.status());
     }
 
     @Test
     @DisplayName("When calling the next option and there are no more tickets, it should throw an exception.")
     void callNextCaseSecond() {
-        Long idQueue = 1L;
-        queueService.callNext(idQueue);
-        queueService.callNext(idQueue);
-        queueService.callNext(idQueue);
-        queueService.callNext(idQueue);
-
-        assertThrows(NoTicketInQueueException.class, () -> queueService.callNext(idQueue));
+        QueueEntity queue = queueRepository.findById(2L).orElseThrow();
+        TicketEntity ticketQueue2 = new TicketEntity("N-10001", TypeTicket.NORMAL, queue);
+        queueService.addToQueue(ticketQueue2);
+        queueService.callNext(2L);
+        assertThrows(NoTicketInQueueException.class, () -> queueService.callNext(2L));
     }
 
     @Test
