@@ -14,11 +14,14 @@ import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
 import phenriqued.github.queue_manager_api.model.ticket.TicketStatus;
 import phenriqued.github.queue_manager_api.repository.queue.QueueRepository;
 import phenriqued.github.queue_manager_api.repository.ticket.TicketRepository;
-import phenriqued.github.queue_manager_api.service.queue.state.InMemoryQueueState;
+import phenriqued.github.queue_manager_api.service.queue.state.memory.InMemoryQueueState;
 import phenriqued.github.queue_manager_api.service.queue.strategy.TicketCallingStrategy;
 import phenriqued.github.queue_manager_api.service.queue.strategy.preferentialPriority.PreferentialPriorityStrategy;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class QueueService {
@@ -27,12 +30,11 @@ public class QueueService {
     private final TicketRepository ticketRepository;
     private Map<Long, InMemoryQueueState> queueState = new HashMap<>();
 
-    private TicketCallingStrategy ticketCallingStrategy;
+    private TicketCallingStrategy ticketCallingStrategy = new PreferentialPriorityStrategy();
 
-    public QueueService(QueueRepository repository, TicketRepository ticketRepository, TicketCallingStrategy ticketCallingStrategy) {
+    public QueueService(QueueRepository repository, TicketRepository ticketRepository) {
         this.repository = repository;
         this.ticketRepository = ticketRepository;
-        this.ticketCallingStrategy = ticketCallingStrategy;
     }
 
     public void addToQueue(@NotNull TicketEntity ticket){

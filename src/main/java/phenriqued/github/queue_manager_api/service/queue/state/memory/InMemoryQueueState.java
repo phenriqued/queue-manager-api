@@ -1,8 +1,8 @@
-package phenriqued.github.queue_manager_api.service.queue.state;
+package phenriqued.github.queue_manager_api.service.queue.state.memory;
 
 import lombok.Getter;
 import phenriqued.github.queue_manager_api.model.ticket.TicketEntity;
-import phenriqued.github.queue_manager_api.model.ticket.TypeTicket;
+import phenriqued.github.queue_manager_api.service.queue.state.QueueState;
 
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
-public class InMemoryQueueState implements QueueState{
+public class InMemoryQueueState implements QueueState {
 
     private Long queueId;
     private final Map<String, Queue<TicketEntity>> queues = new ConcurrentHashMap<>();
